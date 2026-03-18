@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion de Stock - Hacoo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>👟 Gestion du Stock</h1>
+    </header>
+
+    <main>
+      <section class="admin-panel">
+        <h2>Ajouter une nouvelle paire au stock</h2>
+        <form id="addShoeForm">
+          <div class="input-group">
+            <select id="shoeModel" required>
+              <option value="" disabled selected>
+                Choisis le modèle de la paire
+              </option>
+              <option value="img/photo1.jpeg">On running marron</option>
+              <option value="img/photo2.jpeg">On running gris</option>
+              <option value="img/photo3.jpeg">On running bleu</option>
+              <option value="img/photo4.jpeg">Birk kaki</option>
+              <option value="img/photo5.jpeg">Birk gris</option>
+              <option value="img/photo6.jpeg">Birk noir</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <select id="shoeOwner" required>
+              <option value="" disabled selected>Qui possède ce stock ?</option>
+              <option value="Toi">Félix</option>
+              <option value="Collègue">Noah</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <input
+              type="number"
+              id="shoeQty"
+              placeholder="Quantité"
+              min="0"
+              required
+            />
+          </div>
+
+          <button type="submit">Ajouter</button>
+        </form>
+      </section>
+
+      <section class="stock-display">
+        <h2>Notre Stock Actuel</h2>
+        <div id="stockGrid" class="stock-grid"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
