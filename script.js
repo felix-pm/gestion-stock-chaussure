@@ -20,11 +20,18 @@ function renderStock() {
     const card = document.createElement("div");
     card.className = "shoe-card";
 
+    // Sécurité : si tu avais d'anciennes paires sans pointure dans la mémoire, on affiche "N/A"
+    const shoeSize = shoe.size ? shoe.size : "N/A";
+
     card.innerHTML = `
             <img src="${shoe.image}" alt="${shoe.name}" class="shoe-img" onerror="this.src='https://via.placeholder.com/300?text=Image+Introuvable'">
             <div class="shoe-info">
                 <h3>${shoe.name}</h3>
-                <span class="owner-badge">Propriétaire : ${shoe.owner}</span>
+                
+                <div style="margin-bottom: 15px;">
+                    <span class="owner-badge" style="background-color: #374151; color: #d1d5db; margin-right: 5px;">Pointure : ${shoeSize}</span>
+                    <span class="owner-badge">Propriétaire : ${shoe.owner}</span>
+                </div>
                 
                 <div class="qty-controls">
                     <button class="qty-btn" onclick="updateQty(${index}, -1)">-</button>
@@ -42,14 +49,13 @@ function renderStock() {
 form.addEventListener("submit", function (e) {
   e.preventDefault();
 
-  // On récupère le menu déroulant
   const shoeModelSelect = document.getElementById("shoeModel");
-  // On cible l'option qui a été sélectionnée par l'utilisateur
   const selectedOption = shoeModelSelect.options[shoeModelSelect.selectedIndex];
 
   const newShoe = {
-    name: selectedOption.text, // Récupère le texte (ex: "On running marron")
-    image: selectedOption.value, // Récupère le lien de l'image (ex: "img/photo1.jpeg")
+    name: selectedOption.text,
+    image: selectedOption.value,
+    size: document.getElementById("shoeSize").value, // On sauvegarde la pointure
     owner: document.getElementById("shoeOwner").value,
     qty: parseInt(document.getElementById("shoeQty").value),
   };
