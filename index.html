@@ -3,70 +3,429 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestion de Stock - Hacoo</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="apple-touch-icon" href="img/icone.png" />
+    <title>Gestion de Stock - Sneakers</title>
+    <style>
+      /* La correction principale est ici : on s'assure que rien ne déborde des boîtes */
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #2c3e50;
+        --secondary: #3498db;
+        --bg: #ecf0f1;
+        --white: #ffffff;
+        --accent: #27ae60;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--bg);
+        margin: 0;
+        padding: 15px;
+        color: var(--primary);
+        /* Empêche le défilement horizontal de toute la page */
+        overflow-x: hidden;
+      }
+      h1 {
+        text-align: center;
+        font-size: 1.8rem;
+        margin-top: 10px;
+      }
+      h2 {
+        text-align: center;
+        font-size: 1.4rem;
+      }
+      .container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+      .card {
+        background-color: var(--white);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* LA MAGIE EST ICI : Permet à la carte de rétrécir sur mobile */
+        min-width: 0;
+        width: 100%;
+      }
+      .full-width {
+        grid-column: 1 / -1;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        width: 100%;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      button {
+        background-color: var(--secondary);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
+      button.btn-sell {
+        background-color: var(--accent);
+      }
+      button.btn-sell:hover {
+        background-color: #2ecc71;
+      }
+
+      /* Conteneur pour rendre les tableaux scrollables sur mobile */
+      .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+        -webkit-overflow-scrolling: touch;
+        /* Ajoute une petite marge en bas pour la barre de défilement */
+        padding-bottom: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        min-width: 600px;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      th {
+        background-color: var(--primary);
+        color: var(--white);
+        white-space: nowrap;
+      }
+      .action-btn {
+        background-color: #e74c3c;
+        padding: 8px 12px;
+        width: auto;
+        margin-top: 0;
+        font-size: 0.9rem;
+      }
+      .action-btn:hover {
+        background-color: #c0392b;
+      }
+
+      /* --- MEDIA QUERIES --- */
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+        .full-width {
+          grid-column: 1;
+        }
+        body {
+          padding: 10px;
+        }
+        .card {
+          padding: 15px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <header>
-      <h1>👟 Gestion du Stock</h1>
-    </header>
+    <h1>👟 Gestion de Stock Sneakers</h1>
 
-    <main>
-      <section class="admin-panel">
-        <h2>Ajouter une nouvelle paire au stock</h2>
-        <form id="addShoeForm">
-          <div class="input-group">
-            <select id="shoeModel" required>
-              <option value="" disabled selected>
-                Choisis le modèle de la paire
-              </option>
-              <option value="img/photo1.jpeg">On running marron</option>
-              <option value="img/photo2.jpeg">On running gris</option>
-              <option value="img/photo3.jpeg">On running bleu</option>
-              <option value="img/photo4.jpeg">Birk kaki</option>
-              <option value="img/photo5.jpeg">Birk gris</option>
-              <option value="img/photo6.jpeg">Birk noir</option>
-            </select>
-          </div>
-
-          <div class="input-group">
+    <div class="container">
+      <div class="card">
+        <h2>Ajouter / Modifier du stock</h2>
+        <form id="add-stock-form">
+          <div class="form-group">
+            <label>Modèle de la paire</label>
             <input
               type="text"
-              id="shoeSize"
-              placeholder="Pointure (ex: 42, 43 1/3)"
+              id="model"
+              placeholder="Ex: Jordan 1 Retro High"
               required
             />
           </div>
-
-          <div class="input-group">
-            <select id="shoeOwner" required>
-              <option value="" disabled selected>Qui possède ce stock ?</option>
-              <option value="Toi">Félix</option>
-              <option value="Collègue">Noah</option>
-            </select>
-          </div>
-
-          <div class="input-group">
+          <div class="form-group">
+            <label>Taille</label>
             <input
               type="number"
-              id="shoeQty"
-              placeholder="Quantité"
-              min="0"
+              step="0.5"
+              id="size"
+              placeholder="Ex: 42.5"
               required
             />
           </div>
-
-          <button type="submit">Ajouter</button>
+          <div class="form-group">
+            <label>Quantité ajoutée chez Félix</label>
+            <input type="number" id="qty-felix" value="0" min="0" required />
+          </div>
+          <div class="form-group">
+            <label>Quantité ajoutée chez Noah</label>
+            <input type="number" id="qty-noah" value="0" min="0" required />
+          </div>
+          <button type="submit">Enregistrer la paire</button>
         </form>
-      </section>
+      </div>
 
-      <section class="stock-display">
-        <h2>Notre Stock Actuel</h2>
-        <div id="stockGrid" class="stock-grid"></div>
-      </section>
-    </main>
+      <div class="card">
+        <h2>Enregistrer une vente</h2>
+        <form id="sell-form">
+          <div class="form-group">
+            <label>Paire & Taille vendue</label>
+            <select id="sell-item" required></select>
+          </div>
+          <div class="form-group">
+            <label>Lieu de départ</label>
+            <select id="sell-location" required>
+              <option value="felix">Chez Félix</option>
+              <option value="noah">Chez Noah</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Vendeur</label>
+            <select id="seller" required>
+              <option value="Vendeur 1">Vendeur 1</option>
+              <option value="Vendeur 2">Vendeur 2</option>
+              <option value="Vendeur 3">Vendeur 3</option>
+              <option value="Vendeur 4">Vendeur 4</option>
+              <option value="Vendeur 5">Vendeur 5</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quantité vendue</label>
+            <input type="number" id="sell-qty" value="1" min="1" required />
+          </div>
+          <button type="submit" class="btn-sell">Valider la vente</button>
+        </form>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="card full-width">
+        <h2>Inventaire Actuel</h2>
+        <div class="table-responsive">
+          <table id="inventory-table">
+            <thead>
+              <tr>
+                <th>Modèle</th>
+                <th>Taille</th>
+                <th>Stock Félix</th>
+                <th>Stock Noah</th>
+                <th>Stock Total</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card full-width">
+        <h2>Historique des Ventes</h2>
+        <div class="table-responsive">
+          <table id="sales-table">
+            <thead>
+              <tr>
+                <th>Date & Heure</th>
+                <th>Vendeur</th>
+                <th>Modèle & Taille</th>
+                <th>Expédié depuis</th>
+                <th>Quantité</th>
+              </tr>
+            </thead>
+            <tbody id="sales-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let inventory = JSON.parse(localStorage.getItem("sneakerStock")) || [];
+      let salesHistory = JSON.parse(localStorage.getItem("sneakerSales")) || [];
+
+      function saveInventory() {
+        localStorage.setItem("sneakerStock", JSON.stringify(inventory));
+        renderInventory();
+        updateSellDropdown();
+      }
+
+      function saveSales() {
+        localStorage.setItem("sneakerSales", JSON.stringify(salesHistory));
+        renderSalesHistory();
+      }
+
+      document
+        .getElementById("add-stock-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const model = document.getElementById("model").value.trim();
+          const size = document.getElementById("size").value;
+          const qtyFelix = parseInt(document.getElementById("qty-felix").value);
+          const qtyNoah = parseInt(document.getElementById("qty-noah").value);
+
+          let existingItemIndex = inventory.findIndex(
+            (item) =>
+              item.model.toLowerCase() === model.toLowerCase() &&
+              item.size === size,
+          );
+
+          if (existingItemIndex > -1) {
+            inventory[existingItemIndex].felix += qtyFelix;
+            inventory[existingItemIndex].noah += qtyNoah;
+          } else {
+            inventory.push({
+              id: Date.now().toString(),
+              model: model,
+              size: size,
+              felix: qtyFelix,
+              noah: qtyNoah,
+            });
+          }
+
+          saveInventory();
+          this.reset();
+          document.getElementById("qty-felix").value = 0;
+          document.getElementById("qty-noah").value = 0;
+        });
+
+      document
+        .getElementById("sell-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const itemId = document.getElementById("sell-item").value;
+          const location = document.getElementById("sell-location").value;
+          const seller = document.getElementById("seller").value;
+          const sellQty = parseInt(document.getElementById("sell-qty").value);
+
+          if (!itemId) return alert("Veuillez sélectionner une paire.");
+
+          let itemIndex = inventory.findIndex((item) => item.id === itemId);
+          if (itemIndex === -1) return;
+
+          if (location === "felix" && inventory[itemIndex].felix < sellQty) {
+            return alert(
+              `Pas assez de stock chez Félix. Stock actuel : ${inventory[itemIndex].felix}`,
+            );
+          }
+          if (location === "noah" && inventory[itemIndex].noah < sellQty) {
+            return alert(
+              `Pas assez de stock chez Noah. Stock actuel : ${inventory[itemIndex].noah}`,
+            );
+          }
+
+          if (location === "felix") {
+            inventory[itemIndex].felix -= sellQty;
+          } else {
+            inventory[itemIndex].noah -= sellQty;
+          }
+
+          const now = new Date();
+          const dateStr =
+            now.toLocaleDateString("fr-FR") +
+            " à " +
+            now.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+
+          const saleRecord = {
+            id: Date.now().toString(),
+            date: dateStr,
+            seller: seller,
+            model: inventory[itemIndex].model,
+            size: inventory[itemIndex].size,
+            location: location === "felix" ? "Chez Félix" : "Chez Noah",
+            qty: sellQty,
+          };
+
+          salesHistory.push(saleRecord);
+          saveSales();
+          saveInventory();
+
+          this.reset();
+          document.getElementById("sell-qty").value = 1;
+        });
+
+      function deleteItem(id) {
+        if (
+          confirm("Es-tu sûr de vouloir supprimer ce modèle de l'inventaire ?")
+        ) {
+          inventory = inventory.filter((item) => item.id !== id);
+          saveInventory();
+        }
+      }
+
+      function renderInventory() {
+        const tbody = document.getElementById("inventory-body");
+        tbody.innerHTML = "";
+
+        inventory.forEach((item) => {
+          const total = item.felix + item.noah;
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                    <td><strong>${item.model}</strong></td>
+                    <td>${item.size}</td>
+                    <td>${item.felix}</td>
+                    <td>${item.noah}</td>
+                    <td><strong>${total}</strong></td>
+                    <td><button class="action-btn" onclick="deleteItem('${item.id}')">Supprimer</button></td>
+                `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function renderSalesHistory() {
+        const tbody = document.getElementById("sales-body");
+        tbody.innerHTML = "";
+        const reversedSales = [...salesHistory].reverse();
+
+        reversedSales.forEach((sale) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                    <td>${sale.date}</td>
+                    <td><strong>${sale.seller}</strong></td>
+                    <td>${sale.model} (T. ${sale.size})</td>
+                    <td>${sale.location}</td>
+                    <td><strong>${sale.qty}</strong></td>
+                `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function updateSellDropdown() {
+        const select = document.getElementById("sell-item");
+        select.innerHTML =
+          '<option value="" disabled selected>Choisir une paire...</option>';
+
+        inventory.forEach((item) => {
+          const total = item.felix + item.noah;
+          if (total > 0) {
+            const option = document.createElement("option");
+            option.value = item.id;
+            option.textContent = `${item.model} - Taille ${item.size} (Total dispo: ${total})`;
+            select.appendChild(option);
+          }
+        });
+      }
+
+      renderInventory();
+      renderSalesHistory();
+      updateSellDropdown();
+    </script>
   </body>
 </html>
